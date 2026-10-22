@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aplikasi Keuangan by Triana</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+        body { font-family: 'Poppins', sans-serif; }
+        /* Kustomisasi scrollbar bernuansa pink */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #fdf2f8; }
+        ::-webkit-scrollbar-thumb { background: #f472b6; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #db2777; }
+    </style>
+</head>
+<body class="bg-pink-50 min-h-screen text-gray-800">
+
+    <header class="bg-gradient-to-r from-pink-400 to-pink-600 text-white shadow-lg sticky top-0 z-50">
+        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+            <h1 class="text-xl md:text-2xl font-bold flex items-center gap-2">
+                <i class="fa-solid fa-wallet"></i> Keuangan by Triana
+            </h1>
+            <button onclick="resetData()" class="bg-white text-pink-600 px-3 py-1 rounded-full text-sm font-semibold hover:bg-pink-100 transition shadow">
+                <i class="fa-solid fa-trash-can mr-1"></i> Reset Data
+            </button>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-4 py-8 max-w-5xl">
+        
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+            <div class="bg-white p-6 rounded-2xl shadow-md border-t-4 border-pink-500 relative overflow-hidden">
+                <div class="absolute top-0 right-0 -mr-4 -mt-4 opacity-10 text-pink-500 text-8xl">
+                    <i class="fa-solid fa-scale-balanced"></i>
+                </div>
+                <h2 class="text-gray-500 text-sm font-semibold mb-1">Total Saldo Saat Ini</h2>
+                <h3 class="text-3xl font-bold text-gray-800" id="totalSaldo">Rp 0</h3>
+            </div>
+            
+            <div class="bg-white p-6 rounded-2xl shadow-md border-t-4 border-green-400 relative overflow-hidden">
+                <div class="absolute top-0 right-0 -mr-4 -mt-4 opacity-10 text-green-400 text-8xl">
+                    <i class="fa-solid fa-arrow-trend-up"></i>
+                </div>
+                <h2 class="text-gray-500 text-sm font-semibold mb-1">Total Uang Masuk</h2>
+                <h3 class="text-2xl font-bold text-green-500" id="totalMasuk">Rp 0</h3>
+            </div>
+
+            <div class="bg-white p-6 rounded-2xl shadow-md border-t-4 border-red-400 relative overflow-hidden">
+                <div class="absolute top-0 right-0 -mr-4 -mt-4 opacity-10 text-red-400 text-8xl">
+                    <i class="fa-solid fa-arrow-trend-down"></i>
+                </div>
+                <h2 class="text-gray-500 text-sm font-semibold mb-1">Total Uang Keluar</h2>
+                <h3 class="text-2xl font-bold text-red-500" id="totalKeluar">Rp 0</h3>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div class="lg:col-span-1 space-y-6">
+                <div class="bg-white p-6 rounded-2xl shadow-md">
+                    <h3 class="text-lg font-bold text-pink-600 mb-4 border-b-2 border-pink-100 pb-2">
+                        <i class="fa-solid fa-plus-circle mr-2"></i>Tambah Transaksi
+                    </h3>
+                    <form id="formTransaksi" class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Jenis</label>
+                            <div class="grid grid-cols-2 gap-2">
+                                <label class="cursor-pointer border border-gray-200 rounded-lg p-3 text-center hover:bg-green-50 transition relative flex items-center justify-center gap-2">
+                                    <input type="radio" name="jenis" value="masuk" class="peer sr-only" required>
+                                    <div class="peer-checked:ring-2 peer-checked:ring-green-500 peer-checked:bg-green-50 absolute inset-0 rounded-lg"></div>
+                                    <span class="relative z-10 text-gray-600 font-medium"><i class="fa-solid fa-arrow-down text-green-500"></i> Masuk</span>
+                                </label>
+                                <label class="cursor-pointer border border-gray-200 rounded-lg p-3 text-center hover:bg-red-50 transition relative flex items-center justify-center gap-2">
+                                    <input type="radio" name="jenis" value="keluar" class="peer sr-only" required checked>
+                                    <div class="peer-checked:ring-2 peer-checked:ring-red-500 peer-checked:bg-red-50 absolute inset-0 rounded-lg"></div>
+                                    <span class="relative z-10 text-gray-600 font-medium"><i class="fa-solid fa-arrow-up text-red-500"></i> Keluar</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Nominal (Rp)</label>
+                            <div class="relative">
+                                <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-500">Rp</span>
+                                <input type="number" id="nominal" required min="1" placeholder="50000"
+                                    class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500 outline-none transition">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Tanggal</label>
+                            <input type="date" id="tanggal" required
+                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500 outline-none transition">
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Catatan / Keterangan</label>
+                            <input type="text" id="keterangan" required placeholder="Beli skincare, Gaji, dll"
+                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500 outline-none transition">
+                        </div>
+
+                        <button type="submit" class="w-full bg-pink-500 hover:bg-pink-600 text-white font-bold py-3 rounded-lg shadow-md hover:shadow-lg transition flex justify-center items-center gap-2">
+                            <i class="fa-solid fa-floppy-disk"></i> Simpan Transaksi
+                        </button>
+                    </form>
+                </div>
+                
+                <div class="bg-white p-6 rounded-2xl shadow-md">
+                    <h3 class="text-lg font-bold text-pink-600 mb-4 border-b-2 border-pink-100 pb-2">
+                        <i class="fa-solid fa-chart-pie mr-2"></i>Diagram Keuangan
+                    </h3>
+                    <div class="relative h-48 w-full flex justify-center">
+                        <canvas id="keuanganChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <div class="lg:col-span-2">
+                <div class="bg-white p-6 rounded-2xl shadow-md h-full flex flex-col">
+                    <h3 class="text-lg font-bold text-pink-600 mb-4 border-b-2 border-pink-100 pb-2">
+                        <i class="fa-solid fa-list mr-2"></i>Riwayat Transaksi
+                    </h3>
+                    
+                    <div class="overflow-x-auto flex-grow">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="bg-pink-50 text-pink-800 text-sm">
+                                    <th class="p-3 rounded-tl-lg">Tanggal</th>
+                                    <th class="p-3">Catatan</th>
+                                    <th class="p-3">Jenis</th>
+                                    <th class="p-3">Nominal</th>
+                                    <th class="p-3 rounded-tr-lg text-center">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tabelRiwayat" class="text-sm">
+                                <!-- Data akan dirender oleh JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <div id="dataKosong" class="hidden flex-col items-center justify-center py-10 text-gray-400">
+                        <i class="fa-solid fa-folder-open text-4xl mb-3"></i>
+                        <p>Belum ada transaksi. Silakan tambah data.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Inisialisasi State
+        let transaksi = JSON.parse(localStorage.getItem('keuangan_triana')) || [];
+        let myChart = null;
+
+        // Set tanggal hari ini sebagai default di form
+        document.getElementById('tanggal').valueAsDate = new Date();
+
+        // Format Angka ke Rupiah
+        const formatRupiah = (angka) => {
+            return new Intl.NumberFormat('id-ID', {
+                style: 'currency',
+                currency: 'IDR',
+                minimumFractionDigits: 0
+            }).format(angka);
+        };
+
+        // Format Tanggal
+        const formatTanggal = (tgl) => {
+            const date = new Date(tgl);
+            return date.toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' });
+        };
+
+        // Update Dashboard (Saldo, Masuk, Keluar)
+        const updateDashboard = () => {
+            let totalMasuk = 0;
+            let totalKeluar = 0;
+
+            transaksi.forEach(trx => {
+                if (trx.jenis === 'masuk') totalMasuk += trx.nominal;
+                else if (trx.jenis === 'keluar') totalKeluar += trx.nominal;
+            });
+
+            const totalSaldo = totalMasuk - totalKeluar;
+
+            document.getElementById('totalMasuk').textContent = formatRupiah(totalMasuk);
+            document.getElementById('totalKeluar').textContent = formatRupiah(totalKeluar);
+            document.getElementById('totalSaldo').textContent = formatRupiah(totalSaldo);
+
+            // Update Chart
+            updateChart(totalMasuk, totalKeluar);
+        };
+
+        // Render Tabel Riwayat
+        const renderRiwayat = () => {
+            const tbody = document.getElementById('tabelRiwayat');
+            const dataKosong = document.getElementById('dataKosong');
+            tbody.innerHTML = '';
+
+            if (transaksi.length === 0) {
+                dataKosong.classList.remove('hidden');
+                dataKosong.classList.add('flex');
+            } else {
+                dataKosong.classList.add('hidden');
+                dataKosong.classList.remove('flex');
+
+                // Sortir transaksi terbaru di atas
+                const sortedTransaksi = [...transaksi].sort((a, b) => new Date(b.tanggal) - new Date(a.tanggal));
+
+                sortedTransaksi.forEach((trx, index) => {
+                    const isMasuk = trx.jenis === 'masuk';
+                    const icon = isMasuk ? '<i class="fa-solid fa-arrow-down text-green-500 bg-green-100 p-1.5 rounded-full"></i>' : '<i class="fa-solid fa-arrow-up text-red-500 bg-red-100 p-1.5 rounded-full"></i>';
+                    const nominalClass = isMasuk ? 'text-green-600 font-semibold' : 'text-red-600 font-semibold';
+                    const nominalText = isMasuk ? `+ ${formatRupiah(trx.nominal)}` : `- ${formatRupiah(trx.nominal)}`;
+                    
+                    const tr = document.createElement('tr');
+                    tr.className = 'border-b border-gray-100 hover:bg-gray-50 transition';
+                    tr.innerHTML = `
+                        <td class="p-3 text-gray-500">${formatTanggal(trx.tanggal)}</td>
+                        <td class="p-3 font-medium text-gray-800">${trx.keterangan}</td>
+                        <td class="p-3 flex items-center gap-2">${icon} <span class="capitalize text-gray-600">${trx.jenis}</span></td>
+                        <td class="p-3 ${nominalClass}">${nominalText}</td>
+                        <td class="p-3 text-center">
+                            <button onclick="hapusTransaksi(${trx.id})" class="text-gray-400 hover:text-red-500 transition" title="Hapus">
+                                <i class="fa-solid fa-trash"></i>
+                            </button>
+                        </td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            }
+        };
+
+        // Update Diagram (Chart.js)
+        const updateChart = (masuk, keluar) => {
+            const ctx = document.getElementById('keuanganChart').getContext('2d');
+            
+            // Hancurkan chart lama jika ada agar tidak tumpang tindih
+            if (myChart) {
+                myChart.destroy();
+            }
+
+            // Jika tidak ada data sama sekali, berikan nilai dummy transparan
+            const hasData = masuk > 0 || keluar > 0;
+            const dataChart = hasData ? [masuk, keluar] : [1];
+            const bgColors = hasData ? ['#4ade80', '#f87171'] : ['#f3f4f6'];
+            const labels = hasData ? ['Uang Masuk', 'Uang Keluar'] : ['Belum ada data'];
+
+            myChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        data: dataChart,
+                        backgroundColor: bgColors,
+                        borderWidth: 0,
+                        hoverOffset: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'bottom', labels: { font: { family: 'Poppins' } } }
+                    }
+                }
+            });
+        };
+
+        // Tambah Transaksi Baru
+        document.getElementById('formTransaksi').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const jenis = document.querySelector('input[name="jenis"]:checked').value;
+            const nominal = parseFloat(document.getElementById('nominal').value);
+            const tanggal = document.getElementById('tanggal').value;
+            const keterangan = document.getElementById('keterangan').value;
+
+            const trxBaru = {
+                id: Date.now(), // Generate ID unik dari timestamp
+                jenis,
+                nominal,
+                tanggal,
+                keterangan
+            };
+
+            transaksi.push(trxBaru);
+            simpanData();
+            
+            // Reset form (kecuali tanggal dan radio keluar)
+            document.getElementById('nominal').value = '';
+            document.getElementById('keterangan').value = '';
+            document.querySelector('input[value="keluar"]').checked = true;
+
+            initApp();
+        });
+
+        // Hapus Transaksi
+        const hapusTransaksi = (id) => {
+            const konfirmasi = confirm("Apakah Anda yakin ingin menghapus data ini?");
+            if (konfirmasi) {
+                transaksi = transaksi.filter(trx => trx.id !== id);
+                simpanData();
+                initApp();
+            }
+        };
+
+        // Reset Semua Data
+        const resetData = () => {
+            const konfirmasi = confirm("PERINGATAN: Semua data keuangan Anda akan dihapus permanen. Lanjutkan?");
+            if (konfirmasi) {
+                transaksi = [];
+                simpanData();
+                initApp();
+            }
+        };
+
+        // Simpan ke LocalStorage
+        const simpanData = () => {
+            localStorage.setItem('keuangan_triana', JSON.stringify(transaksi));
+        };
+
+        // Inisialisasi awal saat halaman dimuat
+        const initApp = () => {
+            updateDashboard();
+            renderRiwayat();
+        };
+
+        // Jalankan saat pertama load
+        initApp();
+    </script>
+</body>
+</html>
